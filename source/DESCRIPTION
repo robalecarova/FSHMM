@@ -1,0 +1,14 @@
+Package: FSHMM
+Title: Feature Selection Hidden Markov Model
+Version: 1.0.2
+Author: Roberto A. Cardenas-Ovando, Hector A. Rueda-Zarate, Julieta Noguez and Claudia Rangel-Escareno
+Maintainer: Roberto A. Cardenas-Ovando <robalecarova@gmail.com>
+Description: A feature selection strategy that selects the best variables of the observation matrix of an experiment with one or multiple conditions by using a hidden Markov model. This strategy can summarize the samples observations or receive a priori information to get a customized model. The multiple condition feature selection strategy depends on the Control/Baseline condition to have a more accurate filtering.
+Depends: R (>= 2.10), RcppHMM
+License: GPL (>= 2)
+SystemRequirements: C++11
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1.9000
+NeedsCompilation: no
+Packaged: 2018-02-14 17:41:42 UTC; acardenas
