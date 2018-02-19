@@ -3,6 +3,7 @@
 rm(list = ls())
 
 # install packages
+# point this to the source file location
 install.packages("./FSHMM_1.0.2.tar.gz", repos = NULL, type = "source")
 
 # Load library

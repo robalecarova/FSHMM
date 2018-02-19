@@ -140,13 +140,6 @@ featureSelectionOneConditionHMM <- function(data,
   # Install and load necessary libraries
   requireNamespace("RcppHMM")
   
-  # It is necessary to be in interactive mode to see the plots
-  if(interactive()) {
-    print("In interactive mode")
-  } else {
-    print("Not in interactive mode")
-  }
-  
   size <- length(times)*reps
   noTrans <- nrow(data)
   conds.data <- data
@@ -233,13 +226,6 @@ featureSelectionOneConditionHMM <- function(data,
   matrix <- matrix.training * factor
   M <- nrow(matrix)
   
-  par(mfrow = c(M,1))
-  for(z in 1:M)
-  {
-    hist(matrix[z,,], breaks = 100, main = paste("Replicate", z), xlim = c(min(matrix), max(matrix) ))  
-  }
-  
-  readline(prompt="This is the data distribution. Continue?") 
   i <- 2
   
   print("Estimating Model parameters")
@@ -265,25 +251,6 @@ featureSelectionOneConditionHMM <- function(data,
   
   model <- learnEM(model, matrix, 
                    iter = iters, delta = 1e-09, print = T) 
-  
-  # Graph the hidden states over the data distribution
-  par(mfrow = c(M , 1))
-  for(j in 1:nrow(matrix))
-  {
-    h <-hist(matrix[j,,],freq=F,breaks=100,main= paste("Replicate", j), xlim = c(min(matrix), max(matrix) ))
-    for(k in 1:i){
-      x <- rnorm(100, mean = model$Mu[j,k], sd = sqrt(model$Sigma[j,j,k]) )
-      x <- sort(x)
-      y <- dnorm(x,mean=mean(x),sd=sd(x))
-      maxDensity <- max(h$density)
-      if(maxDensity < max(y)){
-        y <- (y/max(y))*max(h$density) 
-      }
-      lines(x, y, col=k, lwd=3)
-    }
-  }  
-  
-  readline(prompt="This is the data distribution with Hidden States. Continue?") 
   
   # Select the state that represents the No Change Sate (N) - Low variance
   mu.1 <- mean(model$Sigma[,,1])
@@ -376,12 +343,7 @@ featureSelectionOneConditionHMM <- function(data,
       counter <- counter + 1
     }
   }
-  
-  head(decoded.important)
-  head(score.states.cond)
-  head(delta.score.cond)
-  head(max.delta.score.cond)
-  
+
   all.scores.changes <- apply(decoded.important, 1, function(x){
     sum(x == "C")
   })
@@ -609,13 +571,6 @@ featureSelectionHMM <- function(data,
   matrix <- matrix.training * factor
   M <- nrow(matrix)
   
-  par(mfrow = c(M,1))
-  for(z in 1:M)
-  {
-    hist(matrix[z,,], breaks = 100, main = paste("Replicate", z), xlim = c(min(matrix), max(matrix) ))  
-  }
-  
-  readline(prompt="This is the data distribution. Continue?") 
   i <- 2
   
   print("Estimating Model parameters")
@@ -640,25 +595,6 @@ featureSelectionHMM <- function(data,
   
   model <- learnEM(model, matrix, 
                    iter = iters, delta = 1e-09, print = T) 
-  
-  # Graph the hidden states over the data distribution
-  par(mfrow = c(M , 1))
-  for(j in 1:nrow(matrix))
-  {
-    h <-hist(matrix[j,,],freq=F,breaks=100,main= paste("Replicate", j), xlim = c(min(matrix), max(matrix) ))
-    for(k in 1:i){
-      x <- rnorm(100, mean = model$Mu[j,k], sd = sqrt(model$Sigma[j,j,k]) )
-      x <- sort(x)
-      y <- dnorm(x,mean=mean(x),sd=sd(x))
-      maxDensity <- max(h$density)
-      if(maxDensity < max(y)){
-        y <- (y/max(y))*max(h$density) 
-      }
-      lines(x, y, col=k, lwd=3)
-    }
-  }  
-  
-  readline(prompt="This is the data distribution with Hidden States. Continue?") 
   
   # Select the state that represents the No Change Sate (N) - Low variance
   mu.1 <- mean(model$Sigma[,,1])
