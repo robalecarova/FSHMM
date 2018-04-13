@@ -26,7 +26,7 @@ reps <- 2                          # number of biological replicates
 
 # DataRatRNAseq variables: GSE75417
 # It loads the annotated data matrix "data.ann"
-load("DataRatRNAseq.RData") 
+load("DataMouseRNAseq.RData") 
 times <- c(0,2,6,12,18,24)                 # study time-points vector
 conds <- c("Control", "IKAROS")    # Condition vector
 reps <- 3                          # number of biological replicates
