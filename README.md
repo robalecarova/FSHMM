@@ -22,11 +22,11 @@ library(FSHMM)
 Main functions
 -----------
 The functions used for feature selection are:
--featureSelectionHMM for case-control or multiple condition feature selection
--featureSelectionOneConditionHMM for unique condition feature selection
+- featureSelectionHMM for case-control or multiple condition feature selection
+- featureSelectionOneConditionHMM for unique condition feature selection
 
 The functions used for plotting the top best ranked features
--plotMultivariate for studies where all the replicates are used for model parameter estimation
--plotUnivariate for studies where all the replicates are summarized for model parameter estimation
+- plotMultivariate for studies where all the replicates are used for model parameter estimation
+- plotUnivariate for studies where all the replicates are summarized for model parameter estimation
 
 
