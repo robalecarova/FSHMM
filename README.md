@@ -12,7 +12,7 @@ Quick setup
   - From R console:
   ```R
   setwd("PATH") # point this to the source file location
-  install.packages("./FSHMM_1.0.2.tar.gz", repos = NULL, type = "source")
+  install.packages("./FSHMM_1.0.3.tar.gz", repos = NULL, type = "source")
   ```
 - Load library
 ```R
