@@ -639,7 +639,7 @@ featureSelectionHMM <- function(data,
     conds.inds[,z] <- decoded.states.collapsed[[z]] != command
   }
   
-  # All the Control genes that are not chaning in all the experiment
+  # All the Control genes that are not changing in all the experiment
   # And all the Condition genes that change even one in all the experiment
   important.indx <- apply(conds.inds, 1, 
                           function(x){
