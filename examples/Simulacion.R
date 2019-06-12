@@ -20,19 +20,22 @@ generateVariables <- function(states, A, mean, sigma, Pi, times){
 }
 
 # model parameters
-# sigma = c(1, 20) #sim 1
-sigma = c(1, 15) #sim 2
+# sigma = c(1/100, 20/100) #sim 2
+sigma = c(4/100, 1) #sim 1
 sigma
 
 mean = c(0,0)
 A = matrix(c( 0.975, 0.025,
               0.0775,0.925),
            ncol = 2, byrow = T)
-Pi = c(0.75, 0.25)
+Pi = c(0.0, 1.0)
 states = c("N", "C")
-times = 5
 genes <- 1e4
+times = 5
 reps = 3
+
+rand = 0.1 # sim1 ~ 0.1
+changingGenes <- 1e3
 
 replicatesCtrl = matrix(0, nrow = genes, ncol = (times+1)*reps)
 
@@ -47,23 +50,24 @@ replicasCont = rep(0,reps*(times+1))
 
 set.seed(100)
 
-for(j in 1:genes){
-  # condition <- sample(states, times, replace = T )
+
+# Changing genes
+for(j in 1:changingGenes){
   condition <- generateVariables(states, A, mean, sigma, Pi, times)
   for (i in 1:times){
     estadoNumero = which.max(condition[i] == states)
-    replicaCond[i] = rnorm(n = 1, mean[estadoNumero], sigma[estadoNumero]) / 10 # factor
-    replicaCont[i] = rnorm(n = 1, mean[1], sigma[1]) / 10 # factor
+    replicaCond[i] = rnorm(n = 1, mean[estadoNumero], sd = sqrt(sigma[estadoNumero])) # factor
+    replicaCont[i] = rnorm(n = 1, mean[1], sd = sqrt(sigma[1]))  # factor
   }
   
-  offset = rnorm(1,10,1)
+  offset = rnorm(1,10,0.1)
   replicaCond <- cumsum(c(offset, replicaCond))
   replicaCont <- cumsum(c(offset, replicaCont))
   
   
   for(i in 1:(times+1)){
-   replicasCond[(((i-1)*3)+1):(i*3)]  = rnorm(reps, replicaCond[i], 0.5)
-   replicasCont[(((i-1)*3)+1):(i*3)]  = rnorm(reps, replicaCont[i], 0.5)
+   replicasCond[(((i-1)*3)+1):(i*3)]  = rnorm(reps, replicaCond[i], rand) 
+   replicasCont[(((i-1)*3)+1):(i*3)]  = rnorm(reps, replicaCont[i], rand) 
   }
   
   replicatesCondition[j,] = replicasCond
@@ -72,11 +76,36 @@ for(j in 1:genes){
   
 }
 
+# Not changing genes
+ for(j in (changingGenes+1):genes){
+  for (i in 1:times){
+    replicaCond[i] = rnorm(n = 1, mean[1], sd = sqrt(sigma[1]))  # factor
+    replicaCont[i] = rnorm(n = 1, mean[1], sd = sqrt(sigma[1]))  # factor
+  }
+  
+  offset = rnorm(1,10,0.1)
+  replicaCond <- cumsum(c(offset, replicaCond))
+  replicaCont <- cumsum(c(offset, replicaCont))
+  
+  
+  for(i in 1:(times+1)){
+    replicasCond[(((i-1)*3)+1):(i*3)]  = rnorm(reps, replicaCond[i], rand) 
+    replicasCont[(((i-1)*3)+1):(i*3)]  = rnorm(reps, replicaCont[i], rand) 
+  }
+  
+  replicatesCondition[j,] = replicasCond
+  replicatesCtrl[j,] = replicasCont
+  geneStatesCondition[j,] = rep("N", times)
+}
+
+
 exp.matrix <- cbind(replicatesCtrl, replicatesCondition)
 times <- seq(0,times)
 conds <- c("Normal", "Condition") # Condition vector 
 decoded <- apply(geneStatesCondition, 1, function(x) { paste(x, collapse = "")})
-save(exp.matrix, decoded, reps, times, conds, file = "Simulation2.RData")
+table(decoded)
+hist(exp.matrix, breaks = 50)
+save(exp.matrix, decoded, reps, times, conds, file = "Simulation.RData")
 
 
 #############
@@ -102,20 +131,19 @@ summ.results <- featureSelectionHMM(exp.matrix,    # Gene expression data matrix
 )
 
 # Lets see the model
-
-summ.results$model
-
+{
 # Lets compare
 # Simulated data
 simData <- decoded
 tabla <- table(simData)
 print(tabla)
 totalSim <- length(simData) - tabla["NNNNN"]
+totalSim
 
 # Model data
 totalModel <- nrow(summ.results$data)
 percentage <- totalModel/totalSim   
-print(percentage)# 85 % # 78 %
+
 
 modelData <- apply(summ.results$decodedStates$Condition, 1, function(x){paste(x, collapse = "")})
 table(modelData)
@@ -124,10 +152,10 @@ decodedModel <- rownames(summ.results$data)
 decodedSim <- decoded != "NNNNN"
 decodedSim <- (1:length(decodedSim))[decodedSim]
 decodedSim <- as.character(decodedSim)
-
-sum(decodedModel %in% decodedSim)/length(decodedModel) # 98% de los decodificados son Reales
-# 96 %
-
-save(summ.results, file = "SimulacionFinal2.RData")
-
+}
+summ.results$model
+print(percentage)
+sum(decodedModel %in% decodedSim)/length(decodedModel) 
+# plotUnivariate(summ.results, times, conds, reps, ".", "prueba4.pdf")
+plotMultivariate(summ.results, times, conds, reps, ".", "prueba4mv.pdf")
 
